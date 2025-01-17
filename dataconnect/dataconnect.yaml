@@ -1,0 +1,12 @@
+specVersion: "v1beta"
+serviceId: "workout-maxlev-frontend"
+location: "us-central1"
+schema:
+  source: "./schema"
+  datasource:
+    postgresql:
+      database: "fdcdb"
+      cloudSql:
+        instanceId: "workout-maxlev-frontend-fdc"
+      # schemaValidation: "COMPATIBLE"
+connectorDirs: ["./connector"]
