@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'login_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,7 +15,24 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class LogoScreen extends StatelessWidget {
+class LogoScreen extends StatefulWidget {
+  @override
+  _LogoScreenState createState() => _LogoScreenState();
+}
+
+class _LogoScreenState extends State<LogoScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // 로딩이 끝난 후 로그인 화면으로 이동하는 코드
+    Future.delayed(Duration(seconds: 3), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
