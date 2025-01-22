@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_app/sign_up.dart'; // sign_up.dart 파일을 임포트
-// SignUpScreen 임포트 추가
+import 'package:workout_maxlev/sign_up.dart'; // sign_up.dart 파일을 임포트
+import 'package:workout_maxlev/main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -153,6 +155,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   try {
                     UserCredential userCredential = await signInWithGoogle();
                     print('로그인 성공: ${userCredential.user?.displayName}');
+                    //로그인 성공후 메인화면으로 이동
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => MainScreen()),
+                    );
                   } catch (e) {
                     print('구글 로그인 실패: $e');
                   }

@@ -1,4 +1,4 @@
-package com.example.flutter_app
+package com.vacation.workout_maxlev
 
 import io.flutter.embedding.android.FlutterActivity
 
