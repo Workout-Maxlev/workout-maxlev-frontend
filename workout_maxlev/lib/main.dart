@@ -1,7 +1,22 @@
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+// main.dart
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart'; // firebase_options.dart를 import합니다.
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Flutter 엔진 초기화
+  try {
+    // Firebase 초기화 시 DefaultFirebaseOptions.currentPlatform을 전달
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print("Firebase initialized successfully");
+  } catch (e) {
+    print("Firebase initialization failed: $e");
+  }
   runApp(MyApp());
 }
 

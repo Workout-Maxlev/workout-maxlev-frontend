@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(MyApp());
-}
+import 'package:firebase_auth/firebase_auth.dart'; // Firebase 인증 임포트
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -30,8 +27,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String _password = ''; // 비밀번호
   String _passwordConfirm = ''; // 비밀번호 확인
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   // 입력값 검증 로직
-  void _validateAndSubmit() {
+  void _validateAndSubmit() async {
     if (_nickname.isEmpty ||
         _email.isEmpty ||
         _password.isEmpty ||
@@ -42,8 +41,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
     } else if (!_isChecked) {
       _showAlertDialog('개인정보 처리방침 및 이용약관에 동의해주세요.');
     } else {
-      // 가입 완료 처리
-      print('가입 완료');
+      try {
+        // Firebase 이메일/비밀번호로 사용자 등록
+        UserCredential userCredential =
+            await _auth.createUserWithEmailAndPassword(
+          email: _email,
+          password: _password,
+        );
+        print('가입 성공: ${userCredential.user?.email}');
+        _showAlertDialog('가입이 완료되었습니다.');
+
+        // 가입 완료 후 MainScreen으로 이동
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => MainScreen()),
+        // );
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'email-already-in-use') {
+          _showAlertDialog('이미 사용 중인 이메일입니다.');
+        } else {
+          _showAlertDialog('가입 중 오류가 발생했습니다: ${e.message}');
+        }
+      } catch (e) {
+        _showAlertDialog('예상치 못한 오류가 발생했습니다.');
+      }
     }
   }
 

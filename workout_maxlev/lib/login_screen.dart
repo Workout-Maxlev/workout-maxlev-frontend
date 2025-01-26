@@ -15,24 +15,44 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // 이메일과 비밀번호로 가입하는 함수
-  Future<void> signUpWithEmailPassword() async {
+  // 이미 가입된 이메일로 로그인 처리
+  Future<void> signInWithEmailPassword() async {
     try {
       final String email = _emailController.text.trim();
       final String password = _passwordController.text.trim();
 
-      // Firebase로 이메일과 비밀번호 가입 처리
+      // Firebase로 이메일과 비밀번호 로그인 처리
       UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
+          .signInWithEmailAndPassword(email: email, password: password);
 
-      print('가입 성공: ${userCredential.user?.email}');
+      print('로그인 성공: ${userCredential.user?.email}');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('가입 성공: ${userCredential.user?.email}')),
+        SnackBar(content: Text('로그인 성공: ${userCredential.user?.email}')),
+      );
+
+      // 로그인 후 MainScreen으로 이동
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MainScreen()),
       );
     } catch (e) {
-      print('이메일/패스워드 가입 실패: $e');
+      print('이메일/패스워드 로그인 실패: $e');
+      String errorMessage = "로그인 실패";
+
+      // FirebaseAuthException 처리
+      if (e is FirebaseAuthException) {
+        if (e.code == 'user-not-found') {
+          errorMessage = '해당 이메일로 가입된 계정이 없습니다.';
+        } else if (e.code == 'wrong-password') {
+          errorMessage = '비밀번호가 잘못되었습니다.';
+        } else {
+          errorMessage = e.message ?? '로그인 오류 발생';
+        }
+      }
+
+      // 로그인 실패 시 알림 메시지 표시
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('가입 실패: ${e.toString()}')),
+        SnackBar(content: Text(errorMessage)),
       );
     }
   }
@@ -108,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: signUpWithEmailPassword,
+                onPressed: signInWithEmailPassword, // 이메일로 로그인
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(vertical: 15),
@@ -128,6 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
+                  // 이메일로 가입하기 버튼 클릭 시 SignUpScreen으로 이동
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => SignUpScreen()),
@@ -155,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   try {
                     UserCredential userCredential = await signInWithGoogle();
                     print('로그인 성공: ${userCredential.user?.displayName}');
-                    //로그인 성공후 메인화면으로 이동
+                    // 로그인 성공 후 MainScreen으로 이동
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => MainScreen()),

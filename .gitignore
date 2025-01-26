@@ -70,3 +70,4 @@ node_modules/
 
 # Firebase config
 google-services.json
+firebase_options.dart
